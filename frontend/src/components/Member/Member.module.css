@@ -1,0 +1,104 @@
+:root {
+    --primary: #10367d;
+    --second: #a5ce00;
+    --base: #ebebeb;
+    --block-padding-x: 24px;
+}
+
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    justify-content: start;
+    gap: 20px;
+    border: 2px solid rgba(255, 255, 255, .5);
+    padding: 24px 0;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, .3);
+    backdrop-filter: blur(5px);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+}
+.block p {
+    font-size: 1.5em;
+    margin-left: var(--block-padding-x);
+}
+.block input {
+    height: 30px;
+    width: 40%;
+    text-align: center;
+    border: 1px solid var(--primary);
+    background: hsla(219, 77%, 28%, .05);
+    padding: 6px 24px;
+    border-radius: 12px;
+    outline: none;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--primary);
+    transition: all .2s ease;
+    font-size: 1.2em;
+    font-weight: 400;
+    margin-right: var(--block-padding-x);
+}
+
+.validation {
+    display: flex;
+    width: 90%;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    border: 2px solid rgba(255, 255, 255, .5);
+    padding: 24px 0;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, .3);
+    backdrop-filter: blur(5px);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.validation button {
+    cursor: pointer;
+    transition: all .2s ease;
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 12px;
+    font-size: 1.2em;
+    font-weight: 600;
+    min-width: 150px;
+    padding: 12px 16px;
+    border: none;
+    background-color: var(--primary);
+    color: white;
+    width: 150px;
+}
+.validation button:hover, .validation button:active { background-color: hsl(219, 77%, 18%); }
+
+@media (max-width: 640px) {
+    .container { 
+        gap: 40px;
+    }
+
+    .block {
+        flex-direction: column;
+        height: 60px;
+        align-items: start;
+        justify-content: center;
+    }
+    .block p {
+        margin-left: 28px;
+        font-size: 1.1em;
+        font-weight: bold;
+    }
+
+    .block input {
+        width: 70%;
+        margin-left: 28px;
+        font-size: 1.1em;
+        padding: 3px 16px;
+        border-radius: 6px;
+    }
+}

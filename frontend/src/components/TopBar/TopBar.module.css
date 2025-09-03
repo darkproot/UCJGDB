@@ -1,0 +1,81 @@
+:root {
+    --primary: #10367d;
+    --second: #a5ce00;
+    --base: #ebebeb;
+}
+
+.top {
+    width: 100%;
+    min-height: 48px;
+    border-bottom: 2px solid hsl(0, 0%, 80%);
+    display: flex;
+    align-items: center;
+    font-family: Arial, Helvetica, sans-serif;
+    position: fixed;
+    top: 0;
+    z-index: 10;
+    background-color: var(--base);
+}
+
+.gap { width: 90%; }
+
+.title {
+    font-weight: bold;
+    font-size: 2em;
+    margin-left: 24px;
+    width: 500px;
+}
+
+.top span {
+    color: var(--primary);
+    font-size: .8em;
+}
+
+.tab_container {
+    margin-right: 10%;
+}
+.tab {
+    margin-right: 24px;
+    font-weight: 300;
+    font-size: 1.3em;
+    text-transform: capitalize;
+    border: 2px solid var(--primary);
+    padding: 4px 8px;
+    border-radius: 12px;
+    transition: all .2s ease;
+    color: var(--primary);
+}
+.tab:hover, .tab:active {
+    background-color: var(--primary);
+    color: white;
+    cursor: pointer;
+}
+
+.conn {
+    margin-right: 12px;
+    width: 500px;
+}
+.conn label { 
+    font-size: 2em; 
+    font-weight: bold;
+}
+
+
+@media (max-width: 640px) {
+    .title {
+        font-size: 1em;
+        width: 600px;
+        margin-left: 12px;
+    }
+
+    .gap { width: 15%; }
+
+    .tab {
+        font-size: .8em;
+        margin-right: 12px;
+    }
+
+    .tab_container { margin-right: 2%; }
+
+    .conn label { font-size: .8em; }
+}

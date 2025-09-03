@@ -1,0 +1,102 @@
+:root {
+    --primary: #10367d;
+    --second: #a5ce00;
+    --base: #ebebeb;
+}
+
+.container {
+    width: 90%;
+    display: flex;
+    align-items: center;
+
+    border: 2px solid rgba(255, 255, 255, .5);
+    padding: 8px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, .3);
+    backdrop-filter: blur(5px);
+}
+
+.title {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 500;
+    font-size: 2.3em;
+}
+
+.gap { width: 100%; }
+
+.action {
+    display: flex;
+    gap: 12px;
+}
+
+.search {
+    border: 1px solid var(--primary);
+    background: hsla(219, 77%, 28%, .05);
+    padding: 12px 24px;
+    border-radius: 12px;
+    width: 300px;
+    outline: none;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--primary);
+    transition: all .2s ease;
+    font-size: 1.2em;
+    font-weight: 400;
+}
+.search::placeholder { color: hsla(219, 77%, 28%, .7); }
+
+/* A modifier lors de l'ajout des icon */
+.action input[type="button"] {
+    border: 2px solid var(--primary);
+    font-family: Arial, Helvetica, sans-serif;
+    background: transparent;
+    border-radius: 12px;
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+    width: 100px;
+    transition: all .2s ease;
+}
+
+.action input[type="button"]:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.action button {
+    background: var(--primary);
+    color: white;
+
+    border: none;
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100px;
+    transition: all .2s ease;
+}
+
+.action button:hover {
+    background: hsl(219, 77%, 18%);
+}
+
+@media (max-width: 640px) {
+    .container {
+        flex-direction: column;
+        padding: 6px;
+    }
+    .gap { height: 0; }
+    .title { display: none; }
+    .action { gap: 8px; }
+    .search {
+        width: 100%;
+        padding: 8px 8px;
+        font-size: .7em;
+        border-radius: 5px;
+    }
+    /* A Modifier lors de l'ajout des icon */
+    .action input[type="button"], .action button {
+        border-radius: 5px;
+        width: 90px;
+    }
+
+}

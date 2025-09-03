@@ -1,0 +1,22 @@
+:root {
+    --primary: #10367d;
+    --second: #a5ce00;
+    --base: #ebebeb;
+}
+
+.main {
+    background-color: var(--primary);
+    width: 100%;
+    display: grid;
+    place-items: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.5em;
+    color: white;
+    font-weight: 900;
+    height: 70px;
+    margin-top: 50px;
+}
+
+@media (max-width: 640px) {
+    .main { display: none; }
+}
