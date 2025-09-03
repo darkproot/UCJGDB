@@ -1,6 +1,7 @@
 import styles from "./Login.module.css"
 import { useState } from "react"
 import axios from 'axios'
+import API from "../../API"
 
 
 function Login(props) {
@@ -8,7 +9,7 @@ function Login(props) {
     const [name, setName] = useState('')
     const [password, setPassword] = useState('')
     let data = { name: name, password: password }
-    const API = 'http://192.168.1.104:5000'
+    // const API = 'http://192.168.1.104:5000'
 
     const handleName = _ => { setName(document.getElementById('name').value) }
     const handlePassword = _ => { setPassword(document.getElementById('password').value) }

@@ -14,8 +14,9 @@ import Admins from '../../components/Admins/Admins'
 import Admin from '../../components/Admin/Admin'
 import AdminInfoBar from '../../components/AdminInfoBar/AdminInfoBar'
 import AdminsInfoBar from '../../components/AdminsInfoBar/AdminsInfoBar'
+import API from '../../API'
 
-const API = 'http://192.168.1.104:5000'
+// const API = 'http://192.168.1.104:5000'
 
 
 function Home() {

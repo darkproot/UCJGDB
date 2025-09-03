@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 import styles from '../Member/Member.module.css'
 import axios from "axios"
+import API from "../../API"
 
-const API = 'http://192.168.1.104:5000'
+// const API = 'http://192.168.1.104:5000'
 
 function Admin({ back, readOnly, AdminId }) {
 
