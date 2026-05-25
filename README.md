@@ -1,4 +1,4 @@
 # UCJGDB
 `Base de donnee` de l'UCJG de TAMDJA.
 `https://UCJG-Background.onrender.com`
-__v2__
+Version 2.0
