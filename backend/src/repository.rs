@@ -2,7 +2,7 @@ use crate::{
     auth,
     db::DbPool,
     models::{Admin, Person, SocialMedia},
-    queries::{CreatePersonPayload, LoginResponse},
+    queries::{CreatePersonPayload, LoginResponse, UpdatePersonPayload},
 };
 
 /// Logs in an admin using the provided name and password.
@@ -250,6 +250,48 @@ pub async fn delete_person(pool: &DbPool, id: i64) -> Result<(), sqlx::Error> {
         DbPool::Sqlite(p) => {
             sqlx::query("DELETE FROM persons WHERE id = ?")
                 .bind(id)
+                .execute(p)
+                .await?;
+            Ok(())
+        }
+    }
+}
+
+/// Updates a person's information in the database.
+pub async fn update_person(pool: &DbPool, payload: UpdatePersonPayload) -> Result<(), sqlx::Error> {
+    match pool {
+        DbPool::Postgres(p) => {
+            sqlx::query("UPDATE persons SET admin_id = $1, name = $2, surname = $3, sex = $4, birthdate = $5, birthplace = $6, class = $7, number = $8, parent_name = $9, parent_number = $10, email = $11 WHERE id = $12")
+                .bind(payload.admin_id)
+                .bind(payload.name)
+                .bind(payload.surname)
+                .bind(payload.sex)
+                .bind(payload.birthdate)
+                .bind(payload.birthplace)
+                .bind(payload.class)
+                .bind(payload.number)
+                .bind(payload.parent_name)
+                .bind(payload.parent_number)
+                .bind(payload.email)
+                .bind(payload.id)
+                .execute(p)
+                .await?;
+            Ok(())
+        }
+        DbPool::Sqlite(p) => {
+            sqlx::query("UPDATE persons SET admin_id = $1, name = $2, surname = $3, sex = $4, birthdate = $5, birthplace = $6, class = $7, number = $8, parent_name = $9, parent_number = $10, email = $11 WHERE id = $12")
+                .bind(payload.admin_id)
+                .bind(payload.name)
+                .bind(payload.surname)
+                .bind(payload.sex)
+                .bind(payload.birthdate)
+                .bind(payload.birthplace)
+                .bind(payload.class)
+                .bind(payload.number)
+                .bind(payload.parent_name)
+                .bind(payload.parent_number)
+                .bind(payload.email)
+                .bind(payload.id)
                 .execute(p)
                 .await?;
             Ok(())

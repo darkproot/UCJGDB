@@ -7,7 +7,7 @@ mod repository;
 
 use axum::{
     Router,
-    routing::{delete, get, post},
+    routing::{delete, get, post, put},
 };
 use std::env;
 use std::net::SocketAddr;
@@ -27,6 +27,7 @@ use utoipa_swagger_ui::SwaggerUi;
         handlers::create_person_handler,
         handlers::get_person_handler,
         handlers::delete_person_handler,
+        handlers::update_person_handler,
     ),
     components(schemas(models::Admin, models::Person, models::SocialMedia))
 )]
@@ -51,6 +52,7 @@ async fn main() {
         .route("/login", post(handlers::login))
         .route("/person", post(handlers::create_person_handler))
         .route("/person/{id}/{admin_id}", get(handlers::get_person_handler))
+        .route("/person", put(handlers::update_person_handler))
         .route(
             "/person/{id}/{admin_id}",
             delete(handlers::delete_person_handler),

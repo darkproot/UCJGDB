@@ -3,6 +3,7 @@ use crate::db::DbPool;
 use crate::models::{Admin, Person, SocialMedia};
 use crate::queries::{
     AdminQuery, CreateAdminPayload, CreatePersonPayload, LoginPayload, LoginResponse,
+    UpdatePersonPayload,
 };
 use crate::repository;
 use axum::extract::Path;
@@ -13,6 +14,7 @@ use axum::{
 };
 use std::env;
 
+/// Handler for logging in an admin.
 #[utoipa::path(
     post,
     path = "/login",
@@ -271,6 +273,8 @@ pub async fn get_person_handler(
     Path((id, admin_id)): Path<(i64, i64)>,
 ) -> Result<Json<Person>, (StatusCode, String)> {
     match repository::get_admin(&pool, admin_id).await {
+        Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+        Ok(None) => Err((StatusCode::UNAUTHORIZED, "Admin introuvable".to_string())),
         Ok(Some(_)) => {
             let person = repository::get_person(&pool, id).await;
             match person {
@@ -279,8 +283,6 @@ pub async fn get_person_handler(
                 Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
             }
         }
-        Ok(None) => Err((StatusCode::UNAUTHORIZED, "Admin introuvable".to_string())),
-        Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
     }
 }
 
@@ -304,7 +306,11 @@ pub async fn delete_person_handler(
     Path((id, admin_id)): Path<(i64, i64)>,
 ) -> Result<StatusCode, (StatusCode, String)> {
     match repository::get_admin(&pool, admin_id).await {
+        Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+        Ok(None) => Err((StatusCode::UNAUTHORIZED, "Admin introuvable".to_string())),
         Ok(Some(_)) => match repository::get_person(&pool, id).await {
+            Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+            Ok(None) => Err((StatusCode::NOT_FOUND, "Person not found".to_string())),
             Ok(Some(_)) => {
                 let res = repository::delete_person(&pool, id).await;
                 match res {
@@ -312,10 +318,39 @@ pub async fn delete_person_handler(
                     Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
                 }
             }
-            Ok(None) => Err((StatusCode::NOT_FOUND, "Person not found".to_string())),
-            Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
         },
-        Ok(None) => Err((StatusCode::UNAUTHORIZED, "Admin introuvable".to_string())),
+    }
+}
+
+/// Update a person's information.
+#[utoipa::path(
+    put,
+    path = "/person",
+    request_body = UpdatePersonPayload,
+    responses(
+        (status = 200, description = "Information mise à jour avec succès"),
+        (status = 400, description = "Mauvaise requete"),
+        (status = 404, description = "Personne non trouvée"),
+        (status = 500, description = "Erreur interne du serveur")
+    )
+)]
+pub async fn update_person_handler(
+    State(pool): State<DbPool>,
+    Json(payload): Json<UpdatePersonPayload>,
+) -> Result<StatusCode, (StatusCode, String)> {
+    match repository::get_admin(&pool, payload.admin_id).await {
         Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+        Ok(None) => Err((StatusCode::UNAUTHORIZED, "Admin introuvable".to_string())),
+        Ok(Some(_)) => match repository::get_person(&pool, payload.id).await {
+            Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+            Ok(None) => Err((StatusCode::NOT_FOUND, "Person not found".to_string())),
+            Ok(Some(_)) => {
+                let res = repository::update_person(&pool, payload).await;
+                match res {
+                    Ok(_) => Ok(StatusCode::OK),
+                    Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+                }
+            }
+        },
     }
 }
