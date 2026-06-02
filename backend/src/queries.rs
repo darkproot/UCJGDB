@@ -1,20 +1,30 @@
-use serde::{Deserialize, Serialize};
+use crate::models::Admin;
+use serde::Deserialize;
 use utoipa::ToSchema;
 
-#[derive(Debug, Serialize, Deserialize, sqlx::FromRow, ToSchema)]
-pub struct Admin {
-    #[schema(example = 1)]
-    pub id: i64,
+#[derive(Debug, Deserialize)]
+pub struct AdminQuery {
+    pub api_key: String,
+}
+
+#[derive(Debug, Deserialize, sqlx::FromRow, ToSchema)]
+pub struct CreateAdminPayload {
     #[schema(example = "admin")]
     pub name: String,
     #[schema(example = "root")]
     pub password: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, sqlx::FromRow, ToSchema)]
-pub struct Person {
-    #[schema(example = 2)]
-    pub id: i64,
+#[derive(Debug, Deserialize, sqlx::FromRow, ToSchema)]
+pub struct LoginPayload {
+    #[schema(example = "admin")]
+    pub name: String,
+    #[schema(example = "root")]
+    pub password: String,
+}
+
+#[derive(Debug, Deserialize, sqlx::FromRow, ToSchema)]
+pub struct CreatePersonPayload {
     #[schema(example = 1)]
     pub admin_id: i64,
     #[schema(example = "Chaltouang Woumo")]
@@ -39,14 +49,8 @@ pub struct Person {
     pub email: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, sqlx::FromRow, ToSchema)]
-pub struct SocialMedia {
-    #[schema(example = 1)]
-    pub id: i64,
-    #[schema(example = 2)]
-    pub person_id: i64,
-    #[schema(example = "Facebook")]
-    pub platform: String,
-    #[schema(example = "sdc45ved#")]
-    pub pseudo: String,
+pub enum LoginResponse {
+    Admin(Admin),
+    NotFound,
+    Unauthorized,
 }
