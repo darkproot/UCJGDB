@@ -28,6 +28,10 @@ use utoipa_swagger_ui::SwaggerUi;
         handlers::get_person_handler,
         handlers::delete_person_handler,
         handlers::update_person_handler,
+        handlers::create_social_media_handler,
+        handlers::get_social_medias_handler,
+        handlers::delete_social_media_handler,
+        handlers::update_social_media_handler,
     ),
     components(schemas(models::Admin, models::Person, models::SocialMedia))
 )]
@@ -57,6 +61,16 @@ async fn main() {
             "/person/{id}/{admin_id}",
             delete(handlers::delete_person_handler),
         )
+        .route("/social-media", post(handlers::create_social_media_handler))
+        .route(
+            "/social-medias/{person_id}/{admin_id}",
+            get(handlers::get_social_medias_handler),
+        )
+        .route(
+            "/social-media/{id}/{admin_id}",
+            delete(handlers::delete_social_media_handler),
+        )
+        .route("/social-media", put(handlers::update_social_media_handler))
         .merge(SwaggerUi::new("/about").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .with_state(pool);
 

@@ -2,7 +2,10 @@ use crate::{
     auth,
     db::DbPool,
     models::{Admin, Person, SocialMedia},
-    queries::{CreatePersonPayload, LoginResponse, UpdatePersonPayload},
+    queries::{
+        CreatePersonPayload, CreateSocialMedia, LoginResponse, UpdatePersonPayload,
+        UpdateSocialMediaPayload,
+    },
 };
 
 /// Logs in an admin using the provided name and password.
@@ -291,6 +294,123 @@ pub async fn update_person(pool: &DbPool, payload: UpdatePersonPayload) -> Resul
                 .bind(payload.parent_name)
                 .bind(payload.parent_number)
                 .bind(payload.email)
+                .bind(payload.id)
+                .execute(p)
+                .await?;
+            Ok(())
+        }
+    }
+}
+
+/// Creates a new social media entry in the database.
+pub async fn create_social_media(
+    pool: &DbPool,
+    payload: CreateSocialMedia,
+) -> Result<(), sqlx::Error> {
+    match pool {
+        DbPool::Postgres(p) => {
+            sqlx::query(
+                "INSERT INTO social_medias (person_id, platform, pseudo) VALUES ($1, $2, $3)",
+            )
+            .bind(payload.person_id)
+            .bind(payload.platform)
+            .bind(payload.pseudo)
+            .execute(p)
+            .await?;
+            Ok(())
+        }
+        DbPool::Sqlite(p) => {
+            sqlx::query(
+                "INSERT INTO social_medias (person_id, platform, pseudo) VALUES ($1, $2, $3)",
+            )
+            .bind(payload.person_id)
+            .bind(payload.platform)
+            .bind(payload.pseudo)
+            .execute(p)
+            .await?;
+            Ok(())
+        }
+    }
+}
+
+/// Retrieves all social media entries for a given person from the database.
+pub async fn get_social_medias(
+    pool: &DbPool,
+    person_id: i64,
+) -> Result<Vec<SocialMedia>, sqlx::Error> {
+    match pool {
+        DbPool::Postgres(p) => {
+            sqlx::query_as::<_, SocialMedia>("SELECT * FROM social_medias WHERE person_id = $1")
+                .bind(person_id)
+                .fetch_all(p)
+                .await
+        }
+        DbPool::Sqlite(p) => {
+            sqlx::query_as::<_, SocialMedia>("SELECT * FROM social_medias WHERE person_id = ?")
+                .bind(person_id)
+                .fetch_all(p)
+                .await
+        }
+    }
+}
+
+/// Retrieves a social media by their ID from the database.
+pub async fn get_social_media(pool: &DbPool, id: i64) -> Result<Option<SocialMedia>, sqlx::Error> {
+    match pool {
+        DbPool::Postgres(p) => {
+            sqlx::query_as::<_, SocialMedia>("SELECT * FROM social_medias WHERE id = $1")
+                .bind(id)
+                .fetch_optional(p)
+                .await
+        }
+        DbPool::Sqlite(p) => {
+            sqlx::query_as::<_, SocialMedia>("SELECT * FROM social_medias WHERE id = ?")
+                .bind(id)
+                .fetch_optional(p)
+                .await
+        }
+    }
+}
+
+/// Deletes a social media by their ID from the database.
+pub async fn delete_social_media(pool: &DbPool, id: i64) -> Result<(), sqlx::Error> {
+    match pool {
+        DbPool::Postgres(p) => {
+            sqlx::query("DELETE FROM social_medias WHERE id = $1")
+                .bind(id)
+                .execute(p)
+                .await?;
+            Ok(())
+        }
+        DbPool::Sqlite(p) => {
+            sqlx::query("DELETE FROM social_medias WHERE id = ?")
+                .bind(id)
+                .execute(p)
+                .await?;
+            Ok(())
+        }
+    }
+}
+
+/// Updates a social media information in the database.
+pub async fn update_social_media(
+    pool: &DbPool,
+    payload: UpdateSocialMediaPayload,
+) -> Result<(), sqlx::Error> {
+    match pool {
+        DbPool::Postgres(p) => {
+            sqlx::query("UPDATE social_medias SET platform = $1, pseudo = $2 WHERE id = $3")
+                .bind(payload.platform)
+                .bind(payload.pseudo)
+                .bind(payload.id)
+                .execute(p)
+                .await?;
+            Ok(())
+        }
+        DbPool::Sqlite(p) => {
+            sqlx::query("UPDATE social_medias SET platform = $1, pseudo = $2 WHERE id = $3")
+                .bind(payload.platform)
+                .bind(payload.pseudo)
                 .bind(payload.id)
                 .execute(p)
                 .await?;

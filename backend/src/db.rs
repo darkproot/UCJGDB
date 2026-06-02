@@ -24,8 +24,9 @@ pub async fn init_pool() -> Result<DbPool, sqlx::Error> {
         Ok(DbPool::Postgres(pool))
     } else if database_url.starts_with("sqlite:") {
         println!("Connexion à la base de données SQLite...");
-        let connection_options =
-            SqliteConnectOptions::from_str(&database_url)?.create_if_missing(true);
+        let connection_options = SqliteConnectOptions::from_str(&database_url)?
+            .create_if_missing(true)
+            .foreign_keys(true);
         let pool = SqlitePoolOptions::new()
             .max_connections(5)
             .connect_with(connection_options)

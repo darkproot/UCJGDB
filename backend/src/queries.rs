@@ -16,6 +16,16 @@ pub struct CreateAdminPayload {
 }
 
 #[derive(Debug, Deserialize, sqlx::FromRow, ToSchema)]
+pub struct CreateSocialMedia {
+    #[schema(example = 1)]
+    pub person_id: i64,
+    #[schema(example = "facebook")]
+    pub platform: String,
+    #[schema(example = "woumo")]
+    pub pseudo: String,
+}
+
+#[derive(Debug, Deserialize, sqlx::FromRow, ToSchema)]
 pub struct LoginPayload {
     #[schema(example = "admin")]
     pub name: String,
@@ -75,6 +85,20 @@ pub struct UpdatePersonPayload {
     pub parent_number: String,
     #[schema(example = "email@example.com")]
     pub email: String,
+}
+
+#[derive(Debug, Deserialize, sqlx::FromRow, ToSchema)]
+pub struct UpdateSocialMediaPayload {
+    #[schema(example = 1)]
+    pub id: i64,
+    #[schema(example = "Facebook")]
+    pub platform: String,
+    #[schema(example = "chaltouangwoumo")]
+    pub pseudo: String,
+    #[schema(example = 1)]
+    pub admin_id: i64,
+    #[schema(example = 56)]
+    pub person_id: i64,
 }
 
 pub enum LoginResponse {

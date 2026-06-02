@@ -2,8 +2,8 @@ use crate::auth;
 use crate::db::DbPool;
 use crate::models::{Admin, Person, SocialMedia};
 use crate::queries::{
-    AdminQuery, CreateAdminPayload, CreatePersonPayload, LoginPayload, LoginResponse,
-    UpdatePersonPayload,
+    AdminQuery, CreateAdminPayload, CreatePersonPayload, CreateSocialMedia, LoginPayload,
+    LoginResponse, UpdatePersonPayload, UpdateSocialMediaPayload,
 };
 use crate::repository;
 use axum::extract::Path;
@@ -349,6 +349,136 @@ pub async fn update_person_handler(
                 match res {
                     Ok(_) => Ok(StatusCode::OK),
                     Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+                }
+            }
+        },
+    }
+}
+
+/// Creates a new social media entry.
+#[utoipa::path(
+    post,
+    path = "/social-media",
+    request_body = CreateSocialMedia,
+    responses(
+        (status = 201, description = "Reseau social créée avec succès"),
+        (status = 400, description = "Mauvaise requete"),
+        (status = 404, description = "Person non trouvé"),
+        (status = 500, description = "Erreur interne du serveur")
+    )
+)]
+pub async fn create_social_media_handler(
+    State(pool): State<DbPool>,
+    Json(payload): Json<CreateSocialMedia>,
+) -> Result<StatusCode, (StatusCode, String)> {
+    match repository::get_person(&pool, payload.person_id).await {
+        Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+        Ok(None) => Err((StatusCode::NOT_FOUND, "Person not found".to_string())),
+        Ok(Some(_)) => {
+            let res = repository::create_social_media(&pool, payload).await;
+            match res {
+                Ok(_) => Ok(StatusCode::CREATED),
+                Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+            }
+        }
+    }
+}
+
+/// Returns a list of social media entries for a given person and admin.
+#[utoipa::path(
+    get,
+    path = "/social-medias/{person_id}/{admin_id}",
+    responses(
+        (status = 200, description = "Liste des réseaux sociaux récupérée avec succès"),
+        (status = 404, description = "Personne non trouvée"),
+        (status = 401, description = "Admin non trouvé"),
+        (status = 500, description = "Erreur interne du serveur")
+    )
+)]
+pub async fn get_social_medias_handler(
+    State(pool): State<DbPool>,
+    Path((person_id, admin_id)): Path<(i64, i64)>,
+) -> Result<Json<Vec<SocialMedia>>, (StatusCode, String)> {
+    match repository::get_admin(&pool, admin_id).await {
+        Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+        Ok(None) => Err((StatusCode::UNAUTHORIZED, "Admin not found".to_string())),
+        Ok(Some(_)) => match repository::get_person(&pool, person_id).await {
+            Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+            Ok(None) => Err((StatusCode::NOT_FOUND, "Person not found".to_string())),
+            Ok(Some(_)) => {
+                let res = repository::get_social_medias(&pool, person_id).await;
+                match res {
+                    Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+                    Ok(res) => Ok(Json(res)),
+                }
+            }
+        },
+    }
+}
+
+/// Deletes a social media by their ID from the database.
+#[utoipa::path(
+    delete,
+    path = "/social-media/{id}/{admin_id}",
+    params(
+        ("id" = i64, Path, description = "ID de la personne"),
+        ("admin_id" = i64, Path, description = "ID de l'administrateur"),
+    ),
+    responses(
+        (status = 200, description = "Social Media deleted successfully"),
+        (status = 404, description = "Social Media not found"),
+        (status = 403, description = "Accès refusé"),
+        (status = 500, description = "Erreur interne du serveur")
+    )
+)]
+pub async fn delete_social_media_handler(
+    State(pool): State<DbPool>,
+    Path((id, admin_id)): Path<(i64, i64)>,
+) -> Result<StatusCode, (StatusCode, String)> {
+    match repository::get_admin(&pool, admin_id).await {
+        Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+        Ok(None) => Err((StatusCode::UNAUTHORIZED, "Admin not found".to_string())),
+        Ok(Some(_)) => match repository::get_social_media(&pool, id).await {
+            Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+            Ok(None) => Err((StatusCode::NOT_FOUND, "Social Media not found".to_string())),
+            Ok(Some(_)) => {
+                let res = repository::delete_social_media(&pool, id).await;
+                match res {
+                    Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+                    Ok(_) => Ok(StatusCode::OK),
+                }
+            }
+        },
+    }
+}
+
+/// Update a social media entry.
+#[utoipa::path(
+    put,
+    path = "/social-media",
+    request_body = UpdateSocialMediaPayload,
+    responses(
+        (status = 200, description = "Information mise à jour avec succès"),
+        (status = 400, description = "Mauvaise requete"),
+        (status = 404, description = "Personne non trouvée"),
+        (status = 500, description = "Erreur interne du serveur")
+    )
+)]
+pub async fn update_social_media_handler(
+    State(pool): State<DbPool>,
+    Json(payload): Json<UpdateSocialMediaPayload>,
+) -> Result<StatusCode, (StatusCode, String)> {
+    match repository::get_admin(&pool, payload.admin_id).await {
+        Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+        Ok(None) => Err((StatusCode::UNAUTHORIZED, "Admin not found".to_string())),
+        Ok(Some(_)) => match repository::get_person(&pool, payload.person_id).await {
+            Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+            Ok(None) => Err((StatusCode::NOT_FOUND, "Person not found".to_string())),
+            Ok(Some(_)) => {
+                let res = repository::update_social_media(&pool, payload).await;
+                match res {
+                    Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+                    Ok(_) => Ok(StatusCode::OK),
                 }
             }
         },
